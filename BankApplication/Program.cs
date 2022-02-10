@@ -27,7 +27,6 @@ namespace BankApplication
         class Account
         {
             private decimal balance = 0.00M;
-            decimal credit = 0.00M;
 
             /// <summary>
             /// creation date: 2/5/2022
