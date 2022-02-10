@@ -2,8 +2,10 @@
 /// author: Sarah Eubank
 /// class: CIS 297, Winter Semester 2022
 /// creation date: 2/5/2022
-/// last modified: 2/9/2022
-/// purpose:
+/// last modified: 2/10/2022
+/// purpose: program is desinged to handles different types of bank accounts
+/// allows debit and credit to the accounts, checks to make sure the accounts are not emptied by debit, calculates interest,
+/// and subtracts checking fees
 /// 
 
 using System;
@@ -19,144 +21,201 @@ namespace BankApplication
         /// <summary>
         /// author: Sarah Eubank
         /// creation date: 2/5/2022
-        /// last modified: 2/9/2022
+        /// last modified: 2/10/2022
         /// base class for SavingsAccount and CheckingAccount
         /// </summary>
-        public class Account
+        class Account
         {
-            private decimal balance = 0.00M; 
+            private decimal balance = 0.00M;
+            decimal credit = 0.00M;
 
             /// <summary>
-            /// author: Sarah Eubank
             /// creation date: 2/5/2022
-            /// last modified: 2/9/2022
-            /// constructor for Account; requires balance be greater than 0.00 otherwise throws exception.
+            /// last modified: 2/10/2022
+            /// public instance of private variable balance
+            /// </summary>
+            public decimal Balance
+            {
+                get { return balance; }
+
+                set
+                {
+                    if (value >= 0.00M)
+                    {
+                        balance = value;
+                    }
+                    else
+                    {
+                        balance = 0.00M;
+                        Console.Write("ERROR: Initial Account balance must be greater than $0.00");
+                        Console.ReadLine();
+                    }
+                }
+            }
+
+            /// <summary>
+            /// creation date: 2/5/2022
+            /// last modified: 2/10/2022
+            /// constructor for class Account
             /// </summary>
             /// <param name="balance"></param>
-            public Account()
+            public Account(decimal balance)
             {
-                Console.Write("Enter in the starting balance: ");
-                balance += Convert.ToDecimal(Console.ReadLine());
+                Balance = balance;
+            }
 
-                //itital balance must be greater than 0.00
-                while (balance <= 0.00M)
-                {
-                    Console.WriteLine("ERROR: Starting balance must be greater than 0.00");
-                    Console.WriteLine("Enter in the starting balance: ");
-                    balance += Convert.ToDecimal(Console.ReadLine());
-                }
-
-                Console.Write("\r\nYour account balance is " + balance);
+            /// <summary>
+            /// creation date: 2/5/2022
+            /// last modified: 2/10/2022
+            /// method to credit(deposit) funds into existing Account
+            /// </summary>
+            public virtual void Credit(decimal credit)
+            {
+                Balance += credit;
+                Console.Write("New Account balance is: " + Balance);
                 Console.ReadLine();
             }
-            /// <summary>
-            /// author: Sarah Eubank
-            /// creation date: 2/9/2022
-            /// last modified: 2/9/2022
-            /// getter function for private variable balance
-            /// </summary>
-            public decimal Balance { get { return balance; } }
 
             /// <summary>
-            /// author: Sarah Eubank
             /// creation date: 2/5/2022
-            /// last modified: 2/9/2022
-            /// method to allow user to add money to account balance
+            /// last modified: 2/10/2022
+            /// method to debit(withdrawl) money from exisiting Account; balance may not go below 0.00
             /// </summary>
-            /// <param name="balance"></param>
-            public void Credit()
+            /// <param name="debit"></param>
+            public virtual bool Debit(decimal debit)
             {
-                Console.Write("Enter deposit amount: ");
-                decimal credit = Convert.ToDecimal(Console.ReadLine());
-
-                balance += credit;
-
-                Console.Write("\r\nNew balance is " + balance);
-                Console.ReadLine();
-            }
-
-            /// <summary>
-            /// author: Sarah Eubank
-            /// creation date: 2/5/2022
-            /// last modified: 2/9/2022
-            /// method that allows user to take money out of their account
-            /// if amount being withdrawn is greater than the balance, gives error
-            /// </summary>
-            /// <param name="balance"></param>
-            public void Debit()
-            {
-                Console.Write("Enter withdrawl amount: ");
-                decimal debit = Convert.ToDecimal(Console.ReadLine());
-
-                //cannot withdrawl more than the balance 
-                while (debit > balance)
+                if((Balance - debit) <= 0.00M)
                 {
-                    Console.WriteLine("Debit amount exceeded amount balance.");
-                    Console.WriteLine("\r\nEnter withdrawl amount: ");
-                    debit = Convert.ToDecimal(Console.ReadLine());
-                }
+                    Console.Write("Debit amount exceeded account balance.");
+                    Console.ReadLine();
 
-                 balance -= debit;
-                 Console.Write("\r\nNew balance is " + balance);
-                 Console.ReadLine();
+                    return (false);
+                }
+                else
+                {
+                    Balance -= debit;
+                    Console.Write("New Account balance is: " + Balance);
+                    Console.ReadLine();
+
+                    return (true);
+                }
             }
+
         }
-       
+
         /// <summary>
         /// author: Sarah Eubank
-        /// creation date: 2/9/2022
-        /// last modified: 2/9/2022
-        /// child class of Account. Can calculate the interest of an Account(5%)
+        /// creation date: 2/5/2022
+        /// last modified: 2/10/2022
+        /// derived class from Account. SavingsAccount handle interest rates
         /// </summary>
-        public class SavingsAccount : Account
+        class SavingsAccount : Account
         {
-            decimal interestRate = 0.05M;
+            decimal interestRate;
 
             /// <summary>
-            /// author: Sarah Eubank
-            /// creation date" 2/9/2022
-            /// last modified: 2/9/2022
+            /// creation date: 2/5/2022
+            /// last modified: 2/10/2022
             /// constructor for derived class SavingsAccount
             /// </summary>
-            public SavingsAccount()
+            /// <param name="balance"></param>
+            /// <param name="interestRate"></param>
+            public SavingsAccount(decimal Balance, decimal interestRate) : base(Balance)
             {
-                decimal balance = Balance;
+                this.interestRate = interestRate;
             }
 
             /// <summary>
-            /// author: Sarah Eubank
-            /// creation date: 2/9/2022
-            /// last modified: 2/9/2022
-            /// function that calculates the interest of a savings account
+            /// creation date: 2/5/2022
+            /// last modified: 2/10/2022
+            /// method to calculate the interest on an exisiting SavingsAccount
             /// </summary>
-            public void CalculateInterest()
+            /// <returns></returns>
+            public decimal CalculateInterest()
             {
-                decimal interest = Balance * interestRate;
-                decimal total = interest + Balance;
+                decimal interest = Balance * (interestRate / 100M);
 
-                Console.WriteLine("\r\nInterest gain for account is: " + interest);
-                Console.Write("Balance plus interest is: " + total);
+                Console.Write("Interest on SavingsAccount is: " + interest);
                 Console.ReadLine();
+
+                return (interest);
             }
         }
 
-        public class CheckingAccount : Account
+        /// <summary>
+        /// author: Sarah Eubank
+        /// creation date: 2/5/2022
+        /// last modified: 2/10/2022
+        /// derived class of Account. Handles accounts with checking fees
+        /// </summary>
+        class CheckingAccount : Account
         {
+            decimal checkingFee;
 
+            /// <summary>
+            /// creation date: 2/5/2022
+            /// last modified: 2/10/2022
+            /// constructor for CheckingAccount
+            /// </summary>
+            /// <param name="balance"></param>
+            /// <param name="checkingFee"></param>
+            public CheckingAccount(decimal balance, decimal checkingFee) : base(balance)
+            {
+                this.checkingFee = checkingFee;
+            }
+
+            /// <summary>
+            /// creation date: 2/9/2022
+            /// last modified: 2/10/2022
+            /// method Credit; override from Account.Credit() to include checking fees
+            /// </summary>
+            /// <param name="credit"></param>
+            public override void Credit(decimal credit)
+            {
+                base.Credit(credit);
+                Balance -= checkingFee;
+
+                Console.Write("New balance on Checking Account after checking fee is: " + Balance);
+                Console.ReadLine();
+            }
+
+            /// <summary>
+            /// creationd date: 2/9/2022
+            /// last modified: 2/10/2022
+            /// method Debit; override from Account.Debit() to include checking fees
+            /// </summary>
+            /// <param name="debit"></param>
+            public override bool Debit(decimal debit)
+            {
+              if (base.Debit(debit))
+                {
+                    Balance -= checkingFee;
+                    Console.Write("New balance on Checking Account after checking fee is: " + Balance);
+                    Console.ReadLine();
+
+                    return (true);
+                }
+              else
+                {
+                    return (false);
+                }
+            }
         }
 
         static void Main(string[] args)
         {
-            /*Console.WriteLine("Creating new account...");
-            var test = new Account();
-            test.Credit();
-            test.Debit();*/
+            /*
+            var test = new Account(5);
+            test.Credit(5);
+            test.Debit(10);
 
-            Console.WriteLine("Creating a Savings Account...");
-            var test2 = new SavingsAccount();
-            test2.Credit();
-            test2.CalculateInterest();
-            
+            var test2 = new SavingsAccount(5, 2);
+            test2.Credit(10);
+            test2.Debit(5);
+            test2.CalculateInterest();*/
+
+            var test3 = new CheckingAccount(15, 3);
+            test3.Debit(10);
         }
     }
 }
