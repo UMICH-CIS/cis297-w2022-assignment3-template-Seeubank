@@ -26,7 +26,7 @@ namespace BankApplication
         /// </summary>
         class Account
         {
-            private decimal balance = 0.00M;
+            private decimal balance;
 
             /// <summary>
             /// creation date: 2/5/2022
@@ -61,6 +61,12 @@ namespace BankApplication
             public Account(decimal balance)
             {
                 Balance = balance;
+
+                if (balance <= 0.00M)
+                {
+                    Console.Write("ERROR: Initital balance must be greater than $0.00");
+                    Console.ReadLine();
+                }
             }
 
             /// <summary>
@@ -203,18 +209,16 @@ namespace BankApplication
 
         static void Main(string[] args)
         {
-            /*
-            var test = new Account(5);
-            test.Credit(5);
-            test.Debit(10);
+            var test = new Account(0);
 
+            /*
             var test2 = new SavingsAccount(5, 2);
             test2.Credit(10);
             test2.Debit(5);
-            test2.CalculateInterest();*/
+            test2.CalculateInterest();
 
             var test3 = new CheckingAccount(15, 3);
-            test3.Debit(10);
+            test3.Debit(10);*/
         }
     }
 }
